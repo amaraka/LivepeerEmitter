@@ -1,0 +1,49 @@
+{
+  "name": "LivepeerEmitter",
+  "version": "0.0.1",
+  "description": "LivePeer event library",
+  "main": "lib/livepeerEmitter.js",
+  "scripts": {
+    "dist": "webpack --env build",
+    "dev": "webpack --progress --colors --watch --env dev"
+  },
+  "dependencies": {
+   "app-root-dir": "^1.0.2",
+   "rimraf": "^2.6.1",
+   "shelljs": "^0.7.8",
+   "ffmpeg-static": "^2.0.0",
+   "livepeer-static": "https://github.com/livepeer/livepeer-static.git",
+   "request": "^2.81.0"
+ },
+  "devDependencies": {
+    "babel-cli": "6.24.1",
+    "babel-core": "6.24.1",
+    "babel-eslint": "7.2.3",
+    "babel-loader": "7.0.0",
+    "babel-plugin-add-module-exports": "0.2.1",
+    "babel-preset-es2015": "6.24.1",
+    "eslint": "3.19.0",
+    "eslint-loader": "1.7.1",
+    "webpack": "3.1.0",
+    "yargs": "7.1.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/livepeer/LivepeerEmitter.git"
+  },
+  "keywords": [
+    "webpack",
+    "es6",
+    "starter",
+    "library",
+    "universal",
+    "umd",
+    "commonjs"
+  ],
+  "author": "The LivePeer autors",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/livepeer/LivepeerEmitterissues"
+  },
+  "homepage": "https://github.com/livepeer/LivepeerEmitter"
+}
