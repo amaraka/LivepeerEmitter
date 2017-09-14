@@ -9,7 +9,10 @@ const livepeer = require('livepeer-static').path;
 const ffmpeg = require('ffmpeg-static').path;
 
 const paths = { livepeer, ffmpeg };
-const transformBinaryPath = (name) => paths[name].replace('bin', `node_modules/${name}-static/bin`).replace('app.asar', 'app.asar.unpacked');
+
+const transformBinaryPath = (name) => {
+  return paths[name].replace('bin', `node_modules/${name}-static/bin`).replace('app.asar', 'app.asar.unpacked');
+};
 
 class LivepeerEmitter extends EventEmitter {
   constructor({ config, log }) {
@@ -29,6 +32,26 @@ class LivepeerEmitter extends EventEmitter {
       this.path.ffmpegPath = transformBinaryPath('ffmpeg');
     }
 
+    this.checkIfRunning = setInterval(
+    () => {
+      request(`http://localhost:${config.httpPort}/peersCount`, (err, res, body) => {
+        if (err != null) {
+          if (err.code === 'ECONNREFUSED') {
+            self.emit('loading', { type: 'add', key: 1 });
+          }
+          return;
+        }
+        const peerCount = JSON.parse(body).count;
+
+        self.emit('loading', { type: 'delete', key: 1 });
+        self.emit('peerCount', { peerCount });
+      });
+    }, 1500);
+
+  }
+
+  stopEmitter() {
+    clearInterval(this.checkIfRunning);
   }
 
   startLivepeer() {
@@ -75,7 +98,7 @@ class LivepeerEmitter extends EventEmitter {
       this.proc.livepeerProc.kill();
       this.proc.livepeerProc = null;
     }
-    resolve('LivePeer Closed');
+
   }
 
   resetLivepeer() {
@@ -92,30 +115,33 @@ class LivepeerEmitter extends EventEmitter {
     if (err != null) {
       return err;
     }
+
+    return '';
   }
 
   getHlsStrmID() {
     const self = this;
+    const { httpPort } = this.config;
 
     request(`http://localhost:${httpPort}/streamID`, (err, res, hlsStrmID) => {
+      self.log.info(err);
       if (hlsStrmID === '') {
         setTimeout(() => self.getHlsStrmID(), 1000);
         return;
       }
       this.emit('broadcast', { hlsStrmID });
-      resolve({ hlsStrmID });
     });
   }
 
   getVideo(strmID) {
+    const { httpPort } = this.config;
     const self = this;
 
     request(`http://localhost:${httpPort}/stream/${strmID}.m3u8`, (err, res, body) => {
       if (!body) {
-        reject({ error: 1 });
+        self.log.info(err);
         return;
       }
-      resolve({ strmID });
     });
   }
 
@@ -170,11 +196,11 @@ class LivepeerEmitter extends EventEmitter {
         self.log.info(`ffmpeg ${code} ~ child process terminated due to receipt of signal ${signal}`);
 
         if (configIdx < frameConfig.length - 1) {
-          self.startFFMpeg(configIdx + 1);
-        } else {
-          self.emit('notifier', { error: 3 });
-          reject({ message: 'FFMpeg process closed' });
+          return self.startFFMpeg(configIdx + 1);
         }
+        self.emit('notifier', { error: 3 });
+        return reject({ message: 'FFMpeg process closed' });
+
       });
     });
 

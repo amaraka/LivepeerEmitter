@@ -2,7 +2,7 @@
   "name": "LivepeerEmitter",
   "version": "0.0.1",
   "description": "LivePeer event library",
-  "main": "lib/livepeerEmitter.js",
+  "main": "lib/livepeerEmitter.min.js",
   "scripts": {
     "dist": "webpack --env build",
     "dev": "webpack --progress --colors --watch --env dev"
