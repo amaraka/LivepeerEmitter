@@ -14,23 +14,30 @@ const transformBinaryPath = (name) => {
   return paths[name].replace('bin', `node_modules/${name}-static/bin`).replace('app.asar', 'app.asar.unpacked');
 };
 
+const cleanPath = (path, bin) => {
+  return path.replace('LivepeerEmitter/lib', bin);
+};
+
 class LivepeerEmitter extends EventEmitter {
   constructor({ config, log }) {
     super();
-
     // global shared object
+
     this.proc = { ffmpegProc: null, livepeerProc: null };
     this.userStopFFmpeg = false;
     this.log = log;
     this.config = config;
+    this.path = {};
 
     if (config.env === 'development') {
-      this.path.livepeerPath = paths.livepeer;
-      this.path.ffmpegPath = paths.ffmpeg;
+      this.path.livepeerPath = cleanPath(paths.livepeer, 'livepeer-static');
+      this.path.ffmpegPath = cleanPath(paths.ffmpeg, 'ffmpeg-static');
     } else {
-      this.path.livepeerPath = transformBinaryPath('livepeer');
-      this.path.ffmpegPath = transformBinaryPath('ffmpeg');
+      this.path.livepeerPath = cleanPath(transformBinaryPath('livepeer'), 'livepeer-static');
+      this.path.ffmpegPath = cleanPath(transformBinaryPath('ffmpeg'), 'ffmpeg-static');
     }
+
+    const self = this;
 
     this.checkIfRunning = setInterval(
     () => {
