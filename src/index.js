@@ -41,7 +41,7 @@ class LivepeerEmitter extends EventEmitter {
 
     this.checkIfRunning = setInterval(
     () => {
-      request(`http://localhost:${config.httpPort}/peersCount`, (err, res, body) => {
+      request(`${config.host}:${config.httpPort}/peersCount`, (err, res, body) => {
         if (err != null) {
           if (err.code === 'ECONNREFUSED') {
             self.emit('loading', { type: 'add', key: 1 });
@@ -62,17 +62,17 @@ class LivepeerEmitter extends EventEmitter {
   }
 
   startLivepeer() {
-    const { httpPort } = this.config;
+    const { host, httpPort, monitorHost } = this.config;
     const self = this;
 
-    request(`http://localhost:${httpPort}`, (err) => {
+    request(`${host}:${httpPort}`, (err) => {
       if (err == null) {
         self.proc.livepeerProc = 'local';
         self.log.info('LivePeer is already running.');
       } else if (self.proc.livepeerProc == null) {
         const args = [
           '-monitor',
-          '-monitorhost', 'http://viz.livepeer.org:8081/metrics'];
+          '-monitorhost', monitorHost];
 
         const livepeerProc = spawn(self.path.livepeerPath, args);
 
@@ -128,9 +128,9 @@ class LivepeerEmitter extends EventEmitter {
 
   getHlsStrmID() {
     const self = this;
-    const { httpPort } = this.config;
+    const { host, httpPort } = this.config;
 
-    request(`http://localhost:${httpPort}/streamID`, (err, res, hlsStrmID) => {
+    request(`${host}:${httpPort}/streamID`, (err, res, hlsStrmID) => {
       self.log.info(err);
       if (hlsStrmID === '') {
         setTimeout(() => self.getHlsStrmID(), 1000);
@@ -141,10 +141,10 @@ class LivepeerEmitter extends EventEmitter {
   }
 
   getVideo(strmID) {
-    const { httpPort } = this.config;
+    const { host, httpPort } = this.config;
     const self = this;
 
-    request(`http://localhost:${httpPort}/stream/${strmID}.m3u8`, (err, res, body) => {
+    request(`${host}:${httpPort}/stream/${strmID}.m3u8`, (err, res, body) => {
       if (!body) {
         self.log.info(err);
         return;
