@@ -62,7 +62,7 @@ emit errors when livepeer stop via
 self.emit('notifier', { error: 2 });
 ```
 
-### startFFMpeg()
+#### startFFMpeg()
 
 emit errors when ffmpeg stop via 
 ```js
@@ -76,7 +76,7 @@ emit the current hlsStrmID
 this.emit('broadcast', { hlsStrmID });
 ``` 
 
-### getVideo(strmID)
+#### getVideo(strmID)
 #### stopLivepeer()
 #### stopEmitter()
 #### resetLivepeer() 
