@@ -65,7 +65,7 @@ class LivepeerEmitter extends EventEmitter {
     const { host, httpPort, monitorHost } = this.config;
     const self = this;
 
-    request(`${host}:${httpPort}`, (err) => {
+    return request(`${host}:${httpPort}`, (err) => {
       if (err == null) {
         self.proc.livepeerProc = 'local';
         self.log.info('LivePeer is already running.');
