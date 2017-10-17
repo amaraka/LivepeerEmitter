@@ -117,13 +117,8 @@ class LivepeerEmitter extends EventEmitter {
     shell.mkdir('-p', `${homeDir}/Livepeer/livepeernet/`);
     this.stopLivepeer();
 
-    const err = this.startLivepeer();
+    return this.startLivepeer();
 
-    if (err != null) {
-      return err;
-    }
-
-    return '';
   }
 
   getHlsStrmID() {
